@@ -109,6 +109,7 @@ public class DepartmentListController implements Initializable {
 			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.showAndWait();
 		} catch (IOException e) {
+			e.printStackTrace();
 			Alerts.showAlert("IOException", "Error loading View", e.getMessage(), AlertType.ERROR);
 		}
 	}
