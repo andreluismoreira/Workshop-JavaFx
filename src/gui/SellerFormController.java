@@ -4,6 +4,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -12,6 +13,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 import DB.DbException;
+import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Constraints;
 import gui.util.Utils;
@@ -42,6 +44,8 @@ public class SellerFormController implements Initializable {
 	private SellerService service;
 
 	private DepartmentService departmentService;
+	
+	private List<DataChangeListener> dataChangeListeners = new ArrayList<>();
 
 	@FXML
 	private TextField txtId;
@@ -93,12 +97,24 @@ public class SellerFormController implements Initializable {
 		try {
 			entity = getFormData();
 			service.saveUpdate(entity);
+			notifyChangeListeners();
 			Utils.currentStage(event).close();
 		} catch (ValidationExceptions e) {
 			setErrorMessages(e.getErros());
 		} catch (DbException e) {
 			Alerts.showAlert("Error saving Object", null, e.getMessage(), AlertType.ERROR);
 		}
+	}
+	
+	public void subscribeDataChangeListener(DataChangeListener listener) {
+		dataChangeListeners.add(listener);
+	}
+	
+	private void notifyChangeListeners() {
+		for(DataChangeListener listener : dataChangeListeners) {
+			listener.onDataChange();
+		}
+		
 	}
 
 	private Seller getFormData() {

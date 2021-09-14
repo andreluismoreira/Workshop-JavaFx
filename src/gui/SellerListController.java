@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 
 import DB.DBIntegrityException;
 import application.Main;
+import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Utils;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -33,7 +34,7 @@ import model.entities.Seller;
 import model.service.DepartmentService;
 import model.service.SellerService;
 
-public class SellerListController implements Initializable {
+public class SellerListController implements Initializable, DataChangeListener {
 
 	private SellerService service;
 
@@ -115,6 +116,7 @@ public class SellerListController implements Initializable {
 			SellerFormController controller = loader.getController();
 			controller.setSeller(obj);
 			controller.setServices(new SellerService(), new DepartmentService());
+			controller.subscribeDataChangeListener(this);
 			controller.loadAssociatedObjects();
 			controller.updateFormData();
 
@@ -193,5 +195,10 @@ public class SellerListController implements Initializable {
 					Alerts.showAlert("Error removing object", null, e.getMessage(), AlertType.ERROR);
 				}
 		}
+	}
+
+	@Override
+	public void onDataChange() {
+		updateTableView();
 	}
 }
